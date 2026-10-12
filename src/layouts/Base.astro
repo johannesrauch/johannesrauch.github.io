@@ -1,0 +1,88 @@
+---
+import '../styles/global.css';
+import { SITE } from '../site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  math?: boolean;
+}
+
+const { title, description = SITE.description, math = false } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.name}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="color-scheme" content="light dark" />
+    {math && <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />}
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="/">{SITE.name}</a>
+        <nav aria-label="Main">
+          <ul>
+            {
+              SITE.nav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <button id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© {new Date().getFullYear()} {SITE.name}</span>
+        <span class="links">
+          {SITE.links.map((l) => <a href={l.href} rel="me">{l.label}</a>)}
+          <a href="/rss.xml">RSS</a>
+        </span>
+      </div>
+    </footer>
+    <script is:inline>
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const root = document.documentElement;
+        const dark =
+          root.dataset.theme === 'dark' ||
+          (!root.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = dark ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('theme', next);
+        } catch {}
+      });
+    </script>
+  </body>
+</html>

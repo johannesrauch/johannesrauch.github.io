@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site';
+---
+
+<Base title="About" description="About Johannes Rauch.">
+  <h1>About</h1>
+  <div class="prose">
+    <p>
+      Hi, I'm {SITE.name}. This is a placeholder: write two or three paragraphs here about your research
+      interests, your current position, and what visitors can find on this site.
+    </p>
+    <h2>Research interests</h2>
+    <ul>
+      <li>Topic one</li>
+      <li>Topic two</li>
+      <li>Topic three</li>
+    </ul>
+    <h2>Contact</h2>
+    <p>
+      {SITE.links.length > 0 && 'You can find me on '}
+      {
+        SITE.links.map((l, i) => (
+          <>
+            <a href={l.href} rel="me">{l.label}</a>
+            {i < SITE.links.length - 1 ? ', ' : '.'}
+          </>
+        ))
+      }
+    </p>
+  </div>
+</Base>

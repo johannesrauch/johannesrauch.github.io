@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import { education, experience, publications, skills, type Entry } from '../data/cv';
+
+const sections: { heading: string; entries: Entry[] }[] = [
+  { heading: 'Education', entries: education },
+  { heading: 'Experience', entries: experience },
+];
+const span = (e: Entry) => `${e.start} – ${e.end ?? 'present'}`;
+---
+
+<Base title="CV" description="Curriculum vitae of Johannes Rauch.">
+  <h1>Curriculum Vitae</h1>
+  <p class="cv-actions">
+    <!-- Put a PDF at public/cv.pdf and uncomment: <a href="/cv.pdf">Download PDF</a> · -->
+    <a href="javascript:print()">Print / save as PDF</a>
+  </p>
+
+  {
+    sections.map((s) => (
+      <section>
+        <h2>{s.heading}</h2>
+        {s.entries.map((e) => (
+          <div class="cv-entry">
+            <div class="when">{span(e)}</div>
+            <div>
+              <h3>{e.title}</h3>
+              <div class="org">
+                {e.org}
+                {e.place && `, ${e.place}`}
+              </div>
+              {e.details && (
+                <ul>
+                  {e.details.map((d) => (
+                    <li>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ))}
+      </section>
+    ))
+  }
+
+  <section>
+    <h2>Publications</h2>
+    {
+      publications.map((p) => (
+        <div class="cv-entry">
+          <div class="when">{p.year}</div>
+          <div>
+            <h3>{p.href ? <a href={p.href}>{p.title}</a> : p.title}</h3>
+            <div class="org">
+              {p.authors}. <em>{p.venue}</em>.
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    {
+      skills.map((s) => (
+        <div class="cv-entry">
+          <div class="when">{s.group}</div>
+          <div>{s.items.join(', ')}</div>
+        </div>
+      ))
+    }
+  </section>
+</Base>
